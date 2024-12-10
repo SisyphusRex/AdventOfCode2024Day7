@@ -1,33 +1,46 @@
 def main(*args):
     """main method"""
 
-    data = get_data("test_data.txt")
+    data = get_data("data.txt")
 
     data_dict_list = make_list_of_dict(data)
+    good_lines = []
 
-    list_of_values_one = data_dict_list[1].get("elements")
-    value_dict = evaluate_list_of_values(list_of_values_one)
+    list_of_values_one = data_dict_list[8].get("elements")
+    possible_values = evaluate_list_of_values(list_of_values_one)
+
+    for index, dictionary in enumerate(data_dict_list):
+        list_of_values = dictionary.get("elements")
+        possible_values = evaluate_list_of_values(list_of_values)
+        equation_total = dictionary.get("total")
+        if equation_total in possible_values:
+            good_lines.append(dictionary)
+
+    total = 0
+    for line in good_lines:
+        total += line.get("total")
+
+    print(total)
 
 
-def evaluate_list_of_values(list_of_values) -> {}:
+def evaluate_list_of_values(list_of_values) -> list:
     length_of_list = len(list_of_values)
+    possible_outcomes = []
     if length_of_list == 2:
-        plus_plus = list_of_values[0] + list_of_values[1]
-        plus_multiply = list_of_values[0] * list_of_values[1]
-        multiply_multiply = list_of_values[0] * list_of_values[1]
-        multiply_plus = list_of_values[0] + list_of_values[1]
-
-        return {
-            "plus_plus": plus_plus,
-            "plus_multiply": plus_multiply,
-            "multiply_multiply": multiply_multiply,
-            "multiply_plus": multiply_plus,
-        }
-    new_list = list_of_values[0 : length_of_list - 1]
-    my_dict = evaluate_list_of_values(new_list)
-    my_dict["plus_plus"] = my_dict["plus_plus"] + new_list[length_of_list - 2]
-    multiply = multiply * new_list[length_of_list - 2]
-    return plus_plus, plus_multiply, multiply_multiply, multiply_plus
+        plus = list_of_values[0] + list_of_values[1]
+        multiply = list_of_values[0] * list_of_values[1]
+        possible_outcomes.append(plus)
+        possible_outcomes.append(multiply)
+        return possible_outcomes
+    new_list_of_values = list_of_values[0 : length_of_list - 1]
+    final_element = list_of_values[length_of_list - 1]
+    previous_outcomes = evaluate_list_of_values(new_list_of_values)
+    for element in previous_outcomes:
+        plus = element + final_element
+        multiply = element * final_element
+        possible_outcomes.append(plus)
+        possible_outcomes.append(multiply)
+    return possible_outcomes
 
 
 def make_list_of_dict(data):
